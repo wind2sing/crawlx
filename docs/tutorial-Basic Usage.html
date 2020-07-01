@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>JSDoc: Basic Usage</title>
+
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./build/entry.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="https://fonts.googleapis.com/css?family=Muli:100,400,700|Oswald:300|Inconsolata,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+</head>
+
+<body>
+    <div id="stickyNavbarOverlay"></div>
+    <div class="top-navbar">
+        <div class="container">
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    
+                     
+                        <h1 class="navbar-item">crawlx Documentation</h1>
+                    
+                    <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </a>
+                </div>
+                 
+                <div class="navbar-menu">
+                    <div class="navbar-end">
+                    
+                        <div class="navbar-item">
+                            <a href="https://github.com/wooddance/crawlx" target="_blank">
+                                Github
+                            </a>
+                        </div>
+                    
+                    </div>
+                </div>
+                
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        <div class="columns">
+            <div class="column is-3" id="sidebarNav">
+                <div class="sidebar">
+                    <nav>
+                        <h2><a href="index.html">Home</a></h2><div class="category"><h3>Tutorials</h3><ul><li><a href="tutorial-Basic Usage.html">Basic Usage</a></li><li><a href="tutorial-Plugin Basic.html">Plugin Basic</a></li><li><a href="tutorial-Plugins.html">Plugins</a></li><li><a href="tutorial-Spawner mode.html">Spawner mode</a></li></ul><h3>Interfaces</h3><ul><li><a href="CrawlerOptions.html">CrawlerOptions</a></li><li><a href="Plugin.html">Plugin</a></li><li><a href="Spawner.html">Spawner</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskMeta.html">TaskMeta</a></li><li><a href="X.html">X</a></li></ul></div>
+                    </nav>
+                </div>
+            </div>
+            <div class="column is-9-desktop">
+                <div class="content" id="main-content-wrapper">
+                    <header class="page-title">
+                        <p>Tutorial</p>
+                        <h1>Basic Usage</h1>
+                    </header>
+                    
+                    <section>
+
+<header>
+    
+</header>
+
+<article>
+    <h2>x Function</h2>
+<p><code>x</code> is a shorthand function to push task into crawler's task queue;</p>
+<p>In order to gain the TypeScript typings (for intellisense / autocomplete) while using CommonJS imports, use the following approach:</p>
+<pre class="prettyprint source lang-js"><code>const x = require(&quot;crawlx&quot;).default;
+</code></pre>
+<p>After execution of http request, you can use <code>callback</code> to handle response in task's option or use Promise interface with <code>x</code> directly. <code>res</code> property will be added on <code>task</code> object after request.</p>
+<pre class="prettyprint source lang-js"><code>let task = {
+  url: &quot;http://books.toscrape.com/&quot;,
+  callback({ res }) {
+    console.log(res.statusCode); // 200
+  }
+};
+x(task).then(task => {
+  console.log(task.res.statusCode); // 200
+});
+</code></pre>
+<p>Access crawler with <code>x</code></p>
+<pre class="prettyprint source lang-js"><code>x.crawler;
+x.agent; // x.crawler.agent; got instance
+x.agentOptions.headers[&quot;Cookie&quot;] = &quot;name=jack&quot;; // x.crawler.agent.defaults.options
+</code></pre>
+<h2>Task options</h2>
+<p><code>crawlx</code> use <a href="https://www.npmjs.com/package/got">got</a> to make http requests.</p>
+<pre class="prettyprint source lang-js"><code>task = {
+  url: &quot;https://www.example.com&quot;,
+
+  // callback function after finishing http request
+  callback(task, cralwer) {},
+
+  // task with higher priority will be executed earlier
+  priority: 0,
+
+  // additional key-value pairs will be passed to agent's request options
+  // full list: https://github.com/sindresorhus/got
+
+  headers: {},
+  method: &quot;POST&quot;,
+  params: {},
+  body: {}
+};
+</code></pre>
+<h2>Extend instance</h2>
+<p>Create new instance with options.</p>
+<pre class="prettyprint source lang-js"><code>const x = require(&quot;crawlx&quot;).default;
+
+const crawlerOptions = { concurrency: 10 };
+const x2 = x.create(crawlerOptions);
+</code></pre>
+<pre class="prettyprint source lang-js"><code>{
+  concurrency: 1,
+
+  // cheerio options
+  cheerio: {
+    keepRelativeUrl: false, // don't transform relative url to absolute
+    disable: false // disable cheerio plugin on response
+  },
+
+  // got options for creating instance
+  got: {}
+};
+</code></pre>
+<p>You can access crawler instance with <code>x.crawler</code> and <code>got</code> instance with <code>x.agent</code> or <code>x.crawler.agent</code>.</p>
+<pre class="prettyprint source lang-js"><code>x.agent.defaults.options.prefixUrl = &quot;https://example.com&quot;;
+x.agentOptions = &quot;https://example.com&quot;;
+</code></pre>
+</article>
+
+</section>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Mon Feb 03 2020 21:46:02 GMT+0800 (China Standard Time)</p>
+        <p class="sidebar-created-by">
+            <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+            <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+        </p>
+    </div>
+</footer>
+
+
+<script src="scripts/app.min.js"></script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

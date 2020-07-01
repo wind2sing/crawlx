@@ -1,0 +1,29 @@
+{
+  "tags": {
+    "allowUnknownTags": ["optional"] //or true
+  },
+  "plugins": ["node_modules/better-docs/typescript", "plugins/markdown"],
+  "source": {
+    "include": ["./source"],
+    "includePattern": "\\.(jsx|js|ts|tsx)$"
+  },
+  "opts": {
+    "template": "node_modules/better-docs",
+    "verbose": true,
+    "sort": false,
+    "readme": "readme.md",
+    "tutorials": "./tutorials",
+    "destination": "./docs"
+  },
+  "templates": {
+    "better-docs": {
+      "name": "crawlx Documentation",
+      "navigation": [
+        {
+          "label": "Github",
+          "href": "https://github.com/wooddance/crawlx"
+        }
+      ]
+    }
+  }
+}

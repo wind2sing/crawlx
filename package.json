@@ -1,0 +1,56 @@
+{
+  "name": "crawlx",
+  "version": "1.5.3",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "description": "crawlx is a Lightweight web crawler with powerful plugins!",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel source --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
+    "docs": "jsdoc -c jsdoc.json",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/jest": "^25.1.1",
+    "agentkeepalive": "^4.1.0",
+    "async-lock": "^1.2.2",
+    "crawlx-parse": "^1.0.0",
+    "debug": "^4.1.1",
+    "deepmerge": "^4.2.2",
+    "eventemitter3": "^4.0.0",
+    "got": "^10.7.0",
+    "nanoid": "^2.1.7"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-typescript": "^7.8.3",
+    "@types/debug": "^4.1.5",
+    "@types/nanoid": "^2.1.0",
+    "better-docs": "^1.4.7",
+    "jest": "^25.1.0",
+    "normalize-url": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wind2sing/crawlx.git"
+  },
+  "homepage": "https://github.com/wind2sing/crawlx",
+  "keywords": [
+    "cheerio",
+    "spider",
+    "scrape",
+    "scraper",
+    "scraping",
+    "crawler",
+    "crawling",
+    "framework"
+  ]
+}
