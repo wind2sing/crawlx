@@ -34,7 +34,6 @@ test("add spawner", async () => {
       url: ""
     })
   });
-  await x2(12);
   await x2("");
   await x2("invalid-test");
   expect(x2.crawler.spawners.length).toBe(2);

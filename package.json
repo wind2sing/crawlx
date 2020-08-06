@@ -17,7 +17,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@types/jest": "^25.1.1",
     "agentkeepalive": "^4.1.0",
     "async-lock": "^1.2.2",
     "cparse": "^1.0.3",
@@ -33,6 +32,7 @@
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
     "@types/debug": "^4.1.5",
+    "@types/jest": "^25.2.3",
     "@types/nanoid": "^2.1.0",
     "better-docs": "^1.4.7",
     "jest": "^25.1.0",
