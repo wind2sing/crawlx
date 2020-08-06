@@ -1,6 +1,4 @@
-import { cheerio } from "crawlx-parse";
-
-const { cheerioOnGotMutable } = cheerio;
+import { cheerioHookForGot } from "cparse";
 
 import HttpAgent, { HttpsAgent } from "agentkeepalive";
 import { ExtendOptions as AgentOptions, Got as Agent } from "got";
@@ -21,14 +19,14 @@ export default function agent(
   agentOptions = {
     agent: {
       http: httpAgent,
-      https: httpsAgent
+      https: httpsAgent,
     },
-    ...agentOptions
+    ...agentOptions,
   };
   const instance = got.extend({
     mutableDefaults: true,
-    ...agentOptions
+    ...agentOptions,
   });
-  cheerioOnGotMutable(instance, cheerioOptions);
+  cheerioHookForGot(instance, cheerioOptions);
   return instance;
 }

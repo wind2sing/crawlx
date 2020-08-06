@@ -1,4 +1,4 @@
-import { parse } from "crawlx-parse";
+import { parse } from "cparse";
 
 function getRules(task) {
   let follows = [];
@@ -20,14 +20,14 @@ export default function getPlugin() {
       for (const follow of follows) {
         let [
           selector,
-          callback = r => r,
-          filter = rs => rs.filter(v => v)
+          callback = (r) => r,
+          filter = (rs) => rs.filter((v) => v),
         ] = follow;
         let parsed = parse(selector, task.res.$, crawler.options.filters);
         // parsed result should always be array
         if (!Array.isArray(parsed)) parsed = [parsed];
         let urls = filter(parsed);
-        let tasks = urls.map(url => callback(url)).filter(v => v);
+        let tasks = urls.map((url) => callback(url)).filter((v) => v);
         for (const task of tasks) {
           // spawner mode
           if (Array.isArray(task)) crawler.add(...task);
@@ -35,6 +35,6 @@ export default function getPlugin() {
           else crawler.add(task);
         }
       }
-    }
+    },
   };
 }
