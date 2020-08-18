@@ -1,6 +1,6 @@
 {
   "tags": {
-    "allowUnknownTags": ["optional"] //or true
+    "allowUnknownTags": ["optional"]
   },
   "plugins": ["node_modules/better-docs/typescript", "plugins/markdown"],
   "source": {
@@ -21,7 +21,7 @@
       "navigation": [
         {
           "label": "Github",
-          "href": "https://github.com/wooddance/crawlx"
+          "href": "https://github.com/wind2sing/crawlx"
         }
       ]
     }
