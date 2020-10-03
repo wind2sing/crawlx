@@ -23,7 +23,7 @@
     "debug": "^4.1.1",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.0",
-    "got": "^10.7.0",
+    "got": "^11.7.0",
     "nanoid": "^2.1.7"
   },
   "devDependencies": {
