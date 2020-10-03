@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.5](https://github.com/wind2sing/crawlx/compare/v1.5.4...v1.5.5) (2020-10-03)
+
+
+### Features
+
+* add three shorthand function ([ebd27f1](https://github.com/wind2sing/crawlx/commit/ebd27f11c4f447f350af7b4bd9c8ee12cc2e0981))
+
+
+### Bug Fixes
+
+* invalid test ([9ddcf31](https://github.com/wind2sing/crawlx/commit/9ddcf31345e52868cdd4b2c254cd77512c07729a))
+
 ### 1.5.4 (2020-08-06)
 
 ### [1.5.2](https://github.com/wooddance/crawlx/compare/v1.5.1...v1.5.2) (2020-04-20)
