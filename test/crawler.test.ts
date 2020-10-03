@@ -25,14 +25,14 @@ test("add spawner", async () => {
   x2.spawner({
     validator: () => false,
     spawn: () => ({
-      url: ""
-    })
+      url: "",
+    }),
   });
   x2.spawner({
     regex: /test/,
     spawn: () => ({
-      url: ""
-    })
+      url: "",
+    }),
   });
   await x2("");
   await x2("invalid-test");
@@ -43,7 +43,7 @@ test("crawler options", async () => {
   const x2 = x.create({
     concurrency: 0,
     attempts: 0,
-    manager: { autoStart: false }
+    manager: { autoStart: false },
   });
   let count = 0;
   x2.crawler.manager.onEmpty().then(() => {
@@ -64,9 +64,28 @@ test("crawler rejects task", async () => {
       url: "http://httpbin.org/status/200",
       callback() {
         throw "dummy error";
-      }
+      },
     });
   } catch (error) {
     expect(error).toBe("dummy error");
   }
+});
+
+test("crawler shorthands", async () => {
+  const x2 = x.create();
+  await x2
+    .body({ url: "http://httpbin.org/headers", responseType: "json" })
+    .then((body) => {
+      expect(body.headers).toBeTruthy();
+    });
+  await x2
+    .res({ url: "http://httpbin.org/headers", responseType: "json" })
+    .then((res) => {
+      expect(res.body).toBeTruthy();
+    });
+  await x2
+    .parse({ url: "http://httpbin.org", parse: "title" })
+    .then((p) => {
+      expect(p).toBe('httpbin.org');
+    });
 });

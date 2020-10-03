@@ -7,6 +7,11 @@
     "module": "esnext",
     "declaration": true
   },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "include": ["source/**/*"],
   "exclude": ["test"]
 }

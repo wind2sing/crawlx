@@ -51,6 +51,14 @@ export interface X {
    * Register a spawner
    */
   spawner: (spawner: Spawner) => any;
+
+  /**
+   * Shorthands
+   */
+  res: (task: Task | string, meta?: TaskMeta) => Promise<Response>;
+  body: (task: Task | string, meta?: TaskMeta) => Promise<any>;
+  parse: (task: Task | string, meta?: TaskMeta) => Promise<any>;
+
   [prop: string]: any;
 }
 

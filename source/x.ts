@@ -37,5 +37,17 @@ export default function createX(options: CrawlerOptions = {}) {
     return createX(deepmerge(this.crawler.options, options));
   };
 
+  x.res = function (task, meta) {
+    return x.crawler.add(task, meta).then(({ res }) => res);
+  };
+
+  x.body = function (task, meta) {
+    return x.crawler.add(task, meta).then(({ res }) => res.body);
+  };
+
+  x.parse = function (task, meta) {
+    return x.crawler.add(task, meta).then(({ parsed }) => parsed);
+  };
+
   return x;
 }
