@@ -117,6 +117,12 @@ export interface CrawlerOptions {
    * Attempt rule for plugin-retry(default: 0).
    */
   attempts?: AttempRule;
+
+  /**
+   * Delay in ms for plugin-delay(default: 0)
+   */
+  delay?: Number;
+
   [prop: string]: any;
 }
 

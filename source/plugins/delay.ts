@@ -7,7 +7,8 @@ export default function(defaultDelay) {
     name: "delay",
     priority: 90,
     async before(task) {
-      if (task.delay || defaultDelay) await sleep(task.delay);
+      const delay = task.delay || defaultDelay
+      if (delay) await sleep(delay);
     }
   };
 }
