@@ -9,7 +9,7 @@ export default function getPlugin({
   removeQueryParameters = [/^utm_\w+/i],
   removeTrailingSlash = true,
   removeDirectoryIndex = false,
-  sortQueryParameters = true
+  sortQueryParameters = true,
 } = {}) {
   const normalizeUrl = require("normalize-url");
   let options = {
@@ -23,7 +23,7 @@ export default function getPlugin({
     removeQueryParameters,
     removeTrailingSlash,
     removeDirectoryIndex,
-    sortQueryParameters
+    sortQueryParameters,
   };
 
   return {
@@ -31,18 +31,22 @@ export default function getPlugin({
     priority: 95,
     normalizeUrl,
     async start(crawler) {
-      if (!crawler.store["dupFilter"]) crawler.store["dupFilter"] = new Set();
+      if (!crawler.store.dupFilter) crawler.store.dupFilter = new Set();
       else {
         console.log(
-          `dupfilter set already exists:${crawler.store["dupFilter"].size}`
+          `dupfilter set already exists:${crawler.store.dupFilter.size}`
         );
       }
     },
     async before(task, crawler) {
-      let normalized = normalizeUrl(task.url, options);
-      if (crawler.store["dupFilter"].has(normalized)) task.cancel = true;
-      else crawler.store["dupFilter"].add(normalized);
-    }
+      const normalized = normalizeUrl(task.url, options);
+      if (crawler.store.dupFilter.has(normalized)) task.cancel = true;
+      else crawler.store.dupFilter.add(normalized);
+    },
+    async onError(err, task, crawler) {
+      const normalized = normalizeUrl(task.url, options);
+      crawler.store.dupFilter.delete(normalized);
+    },
   };
 }
 

@@ -10,15 +10,30 @@ test("dupFilter plugin", async () => {
     priority: -100,
     before: () => {
       count += 1;
-    }
+    },
   });
   await x({
-    url: "invalid"
+    url: "http://httpbin.org/status/200",
   });
   await x({
-    url: "invalid"
+    url: "http://httpbin.org/status/200",
   });
   expect(count).toBe(1);
+});
+
+test("dupFilter plugin onError", async () => {
+  const x = X.create({ attempts: 2});
+  await x.crawler.use(plugins.dupFilter());
+  let count = 0;
+  await x.use({
+    name: "fix-error",
+    priority: -100,
+    before() {
+      count += 1;
+    },
+  });
+  await x({ url: "http://httpbin.org/status/404" });
+  expect(count).toEqual(3)
 });
 test("dupFilter plugin store", async () => {
   let count = 0;
@@ -32,10 +47,10 @@ test("dupFilter plugin store", async () => {
     priority: -100,
     before: () => {
       count += 1;
-    }
+    },
   });
   await x({
-    url: "invalid"
+    url: "invalid",
   });
 
   expect(count).toBe(0);
