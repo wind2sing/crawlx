@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.6](https://github.com/wind2sing/crawlx/compare/v1.5.5...v1.5.6) (2021-07-14)
+
+
+### Features
+
+* crawler option: delay ([d646bf2](https://github.com/wind2sing/crawlx/commit/d646bf2ba8a5d3ec218e8bb471f3ddda1090a280))
+
+
+### Bug Fixes
+
+* dupFilter plugin allow errors ([c2f4641](https://github.com/wind2sing/crawlx/commit/c2f464183fc54241040434af64752cfdabb1bd10))
+
 ### [1.5.5](https://github.com/wind2sing/crawlx/compare/v1.5.4...v1.5.5) (2020-10-03)
 
 
