@@ -1,7 +1,5 @@
 .envrc
 temp/
-yarn.lock
-package-lock.json
 .vscode/
 lib/
 

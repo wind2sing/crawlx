@@ -19,7 +19,7 @@
   "dependencies": {
     "agentkeepalive": "^4.1.0",
     "async-lock": "^1.2.2",
-    "cparse": "^1.0.3",
+    "cparse": "^1.0.5",
     "debug": "^4.1.1",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.0",
