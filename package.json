@@ -1,56 +1,81 @@
 {
   "name": "crawlx",
-  "version": "1.5.7",
-  "main": "lib/index.js",
+  "version": "2.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "files": [
-    "lib"
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
   ],
-  "description": "crawlx is a Lightweight web crawler with powerful plugins!",
+  "description": "Advanced web crawler and scraper with built-in parsing, following, rate limiting, and plugin system",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch",
-    "build": "npm run build:types && npm run build:js",
-    "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "babel source --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
-    "docs": "jsdoc -c jsdoc.json",
-    "test": "jest"
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "dev": "tsx examples/basic-usage.ts",
+    "test": "tsx scripts/run-tests.ts",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --ui",
+    "test:unit": "vitest run src/**/*.test.ts",
+    "test:integration": "vitest run tests/integration/**/*.test.ts",
+    "test:performance": "vitest run tests/performance/**/*.test.ts",
+    "test:e2e": "vitest run tests/e2e/**/*.test.ts",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "agentkeepalive": "^4.1.0",
-    "async-lock": "^1.2.2",
-    "cparse": "^1.0.6",
-    "debug": "^4.1.1",
-    "deepmerge": "^4.2.2",
-    "eventemitter3": "^4.0.0",
-    "got": "^11.7.0",
-    "nanoid": "^2.1.7"
+    "cheerio": "^1.0.0-rc.12",
+    "undici": "^5.28.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.3",
-    "@babel/core": "^7.8.3",
-    "@babel/preset-env": "^7.8.3",
-    "@babel/preset-typescript": "^7.8.3",
-    "@types/debug": "^4.1.5",
-    "@types/jest": "^25.2.3",
-    "@types/nanoid": "^2.1.0",
-    "better-docs": "^1.4.7",
-    "jest": "^25.1.0",
-    "normalize-url": "^5.0.0"
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vitest/coverage-v8": "^1.1.0",
+    "@vitest/ui": "^1.1.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "prettier": "^3.1.1",
+    "rimraf": "^5.0.5",
+    "tsup": "^8.0.1",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3",
+    "vitepress": "^1.0.0-rc.36",
+    "vitest": "^1.1.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/wind2sing/crawlx.git"
   },
   "homepage": "https://github.com/wind2sing/crawlx",
+  "bugs": {
+    "url": "https://github.com/wind2sing/crawlx/issues"
+  },
   "keywords": [
-    "cheerio",
-    "spider",
-    "scrape",
+    "web-crawler",
     "scraper",
     "scraping",
-    "crawler",
-    "crawling",
-    "framework"
+    "spider",
+    "parser",
+    "cheerio",
+    "typescript",
+    "plugin-system",
+    "concurrent",
+    "lightweight"
   ]
 }

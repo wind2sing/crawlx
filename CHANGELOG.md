@@ -2,6 +2,78 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0] - 2024-01-XX
+
+### Added
+
+#### Core Features
+- **Complete rewrite** of CrawlX with TypeScript for better type safety and developer experience
+- **Dual mode operation**: Lightweight and high-performance modes for different use cases
+- **Advanced plugin system** with built-in plugins and custom plugin support
+- **Comprehensive configuration system** with environment variable support and validation
+- **Task scheduling system** with priority queues and resource management
+- **Structured logging** with multiple transports (console, file, memory)
+- **Advanced error handling** with custom error types and recovery mechanisms
+
+#### HTTP Client
+- **Multi-mode HTTP client** with lightweight and high-performance implementations
+- **Built-in Cheerio integration** for automatic HTML parsing
+- **Connection pooling** and keep-alive support
+- **Request/response interceptors** for custom processing
+- **Automatic retry logic** with exponential backoff
+- **Comprehensive statistics** and monitoring
+
+#### Parser Engine
+- **Enhanced CSS selector parsing** with advanced filter system
+- **Scope-based parsing** for complex data structures
+- **Custom filter support** for data transformation
+- **Validation system** for parse rules
+- **Performance optimizations** for large documents
+
+#### Plugin System
+- **ParsePlugin**: Advanced data extraction with validation
+- **FollowPlugin**: Intelligent link following with depth control
+- **RetryPlugin**: Configurable retry logic with circuit breaker
+- **DelayPlugin**: Request delays and politeness features
+- **DuplicateFilterPlugin**: URL deduplication with normalization
+- **RateLimitPlugin**: Token bucket-based rate limiting
+
+#### Configuration Management
+- **Schema-based configuration** with validation
+- **Environment variable support** with automatic type conversion
+- **Configuration presets** for common use cases
+- **Runtime configuration updates** with event notifications
+- **Configuration import/export** for persistence
+
+#### Developer Experience
+- **Factory functions** for quick crawler creation
+- **TypeScript definitions** for full type safety
+- **Comprehensive examples** and documentation
+- **Event-driven architecture** for monitoring and debugging
+- **Statistics and monitoring** APIs
+
+### Changed
+- **Breaking**: Complete API redesign for better usability and consistency
+- **Breaking**: New configuration format with nested structure
+- **Breaking**: Plugin system completely rewritten
+- **Breaking**: Minimum Node.js version increased to 16.0.0
+
+### Improved
+- **Performance**: Significant performance improvements in parsing and HTTP handling
+- **Memory usage**: Better memory management and garbage collection
+- **Error handling**: More descriptive errors with context information
+- **Documentation**: Comprehensive documentation with examples
+- **Testing**: Extensive test coverage with integration tests
+
+### Dependencies
+- **Added**: `undici` for high-performance HTTP client
+- **Updated**: `cheerio` to latest version for better performance
+- **Removed**: Legacy dependencies for smaller bundle size
+
+---
+
+## Previous Versions (1.x.x)
+
 ### [1.5.7](https://github.com/wind2sing/crawlx/compare/v1.5.6...v1.5.7) (2021-07-15)
 
 ### [1.5.6](https://github.com/wind2sing/crawlx/compare/v1.5.5...v1.5.6) (2021-07-14)
