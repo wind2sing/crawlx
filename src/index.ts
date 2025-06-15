@@ -104,4 +104,5 @@ export const VERSION = '2.0.0';
 /**
  * Default export - CrawlX class
  */
+import { CrawlX } from './core/crawlx';
 export default CrawlX;

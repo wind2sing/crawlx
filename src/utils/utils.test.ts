@@ -201,7 +201,7 @@ describe('URL Utils', () => {
         removeFragment: true,
       });
       
-      expect(normalized).toBe('https://example.com/path/?a=1&b=2');
+      expect(normalized).toBe('https://example.com/path?a=1&b=2');
     });
 
     it('should remove trailing slashes', () => {

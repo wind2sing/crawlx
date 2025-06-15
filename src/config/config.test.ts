@@ -214,12 +214,18 @@ describe('ConfigFactory', () => {
   describe('Configuration validation', () => {
     it('should validate configuration against schema', () => {
       const config = ConfigFactory.create({
-        concurrency: -1, // Invalid: should be positive
+        concurrency: 5, // Valid value first
       }, { strict: false });
 
-      const validation = config.validate();
-      expect(validation.valid).toBe(false);
-      expect(validation.errors.length).toBeGreaterThan(0);
+      // First validate the current valid configuration
+      let validation = config.validate();
+      expect(validation.valid).toBe(true);
+      expect(validation.errors.length).toBe(0);
+
+      // Now try to set an invalid value and catch the error
+      expect(() => {
+        config.set('concurrency', -1);
+      }).toThrow(/Validation failed/);
     });
 
     it('should throw in strict mode for invalid config', () => {

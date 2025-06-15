@@ -53,23 +53,40 @@ export class HttpClient extends BaseHttpClient {
   /**
    * Make request and return Cheerio instance
    */
-  async requestWithCheerio(request: HttpRequest): Promise<HttpResponse & { $: cheerio.CheerioAPI }> {
+  async requestWithCheerio(request: HttpRequest): Promise<HttpResponse & { $?: cheerio.CheerioAPI }> {
     const response = await this.request(request);
-    
-    // Only parse HTML content
+
+    // Check content type and handle accordingly
     const contentType = response.headers['content-type'] || '';
-    if (!contentType.includes('text/html') && !contentType.includes('application/xml')) {
-      throw new Error(`Cannot parse non-HTML content: ${contentType}`);
+
+    if (contentType.includes('text/html') || contentType.includes('application/xml')) {
+      // Parse HTML/XML content with Cheerio
+      const html = response.body.toString('utf8');
+      const $ = cheerio.load(html);
+      extendCheerio($);
+
+      return {
+        ...response,
+        $,
+      };
+    } else if (contentType.includes('application/json')) {
+      // For JSON content, create a virtual DOM with the JSON data
+      const jsonData = JSON.parse(response.body.toString('utf8'));
+      const virtualHtml = `<html><body>${JSON.stringify(jsonData)}</body></html>`;
+      const $ = cheerio.load(virtualHtml);
+      extendCheerio($);
+
+      return {
+        ...response,
+        $,
+      };
+    } else {
+      // For other content types, return without Cheerio instance
+      return {
+        ...response,
+        $: undefined,
+      };
     }
-
-    const html = response.body.toString('utf8');
-    const $ = cheerio.load(html);
-    extendCheerio($);
-
-    return {
-      ...response,
-      $,
-    };
   }
 
   /**

@@ -180,8 +180,8 @@ export interface HttpResponse {
     tcp?: number;
     tls?: number;
     request: number;
-    firstByte: number;
-    download: number;
+    firstByte?: number;
+    download?: number;
     total: number;
   };
 }
@@ -191,7 +191,7 @@ export interface HttpRequest {
   method: string;
   headers: Record<string, string>;
   body?: string | Buffer;
-  timeout: number;
+  timeout?: number;
 }
 
 // Task types
@@ -200,10 +200,11 @@ export interface TaskResult {
   response: HttpResponse;
   parsed?: any;
   followed?: TaskOptions[];
+  metadata?: Record<string, any>;
   error?: Error;
-  retries: number;
-  duration: number;
-  timestamp: number;
+  retries?: number;
+  duration?: number;
+  timestamp?: number;
 }
 
 export interface TaskState {

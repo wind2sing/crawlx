@@ -36,9 +36,13 @@ export function parseQuery(query: string): QueryInfo {
   let getAll = false;
 
   // Check if it's an array selector [selector]
-  if (str.startsWith('[') && str.endsWith(']')) {
+  if (str.startsWith('[') && str.includes(']')) {
+    const closeBracketIndex = str.indexOf(']');
+    const selectorWithBrackets = str.substring(0, closeBracketIndex + 1);
+    const restOfQuery = str.substring(closeBracketIndex + 1);
+
     getAll = true;
-    str = str.slice(1, -1).trim();
+    str = selectorWithBrackets.slice(1, -1).trim() + restOfQuery;
   }
 
   // Split by filter separator

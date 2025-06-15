@@ -77,10 +77,16 @@ describe('CrawlX Integration', () => {
 
     it('should handle plugin management', () => {
       const initialStats = crawler.getStats().plugins;
-      
-      // Test plugin removal (if any plugins are loaded)
+
+      // Test plugin removal - try to remove a plugin that has dependencies
+      // This should fail because 'follow' depends on 'parse'
       if (initialStats.total > 0) {
-        const removed = crawler.removePlugin('parse');
+        expect(() => crawler.removePlugin('parse')).toThrow(/depends on it/);
+      }
+
+      // Test successful plugin removal - remove a plugin without dependencies
+      if (initialStats.total > 0) {
+        const removed = crawler.removePlugin('delay');
         expect(typeof removed).toBe('boolean');
       }
     });

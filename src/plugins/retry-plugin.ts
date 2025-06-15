@@ -130,7 +130,10 @@ export class RetryPlugin extends Plugin {
       }
 
       // Schedule retry (this would be handled by the crawler/scheduler)
-      this.emit('retry-scheduled', task, attempt, delay);
+      // Note: Plugin doesn't have emit method, use context instead
+      if (this.context?.logger) {
+        this.context.logger.debug(`Retry scheduled for ${task.url}`, { attempt, delay });
+      }
     } else {
       if (this.context?.logger) {
         this.context.logger.error(`Task ${task.url} failed permanently after ${retryCount} retries`, {
@@ -140,7 +143,10 @@ export class RetryPlugin extends Plugin {
         });
       }
 
-      this.emit('retry-exhausted', task, error);
+      // Note: Plugin doesn't have emit method, use context instead
+      if (this.context?.logger) {
+        this.context.logger.warn(`Retry exhausted for ${task.url}`, { error: error.message });
+      }
     }
   }
 
@@ -154,7 +160,10 @@ export class RetryPlugin extends Plugin {
       this.context.logger.info(`Retrying task ${task.url} (attempt ${attempt})`);
     }
 
-    this.emit('retry-executed', task, attempt);
+    // Note: Plugin doesn't have emit method, use context instead
+    if (this.context?.logger) {
+      this.context.logger.debug(`Retry executed for ${task.url}`, { attempt });
+    }
   }
 
   /**

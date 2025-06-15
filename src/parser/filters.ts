@@ -41,6 +41,16 @@ export const builtinFilters: Record<string, FilterFunction> = {
   },
 
   /**
+   * Extract text content (for Cheerio objects)
+   */
+  text: (value: any): string => {
+    if (value && typeof value.text === 'function') {
+      return value.text();
+    }
+    return String(value);
+  },
+
+  /**
    * Slice string or array
    */
   slice: (value: any, start: number, end?: number): any => {
@@ -200,6 +210,16 @@ export const builtinFilters: Record<string, FilterFunction> = {
    * Get length
    */
   length: (value: any): number => {
+    if (Array.isArray(value) || typeof value === 'string') {
+      return value.length;
+    }
+    return 0;
+  },
+
+  /**
+   * Count elements (alias for length)
+   */
+  count: (value: any): number => {
     if (Array.isArray(value) || typeof value === 'string') {
       return value.length;
     }

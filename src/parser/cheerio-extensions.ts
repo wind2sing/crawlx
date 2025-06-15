@@ -61,45 +61,53 @@ export interface CheerioExtensions {
  * Add extension methods to Cheerio prototype
  */
 export function extendCheerio($: CheerioAPI): void {
-  const proto = ($ as any).prototype || {};
-  if (!($ as any).prototype) {
-    ($ as any).prototype = proto;
+  // Get the Cheerio constructor function
+  const CheerioClass = $.constructor;
+  const proto = CheerioClass.prototype;
+
+  // Only add methods if they don't already exist
+  if (!proto.extract) {
+    // Extract content from first element
+    proto.extract = function(attribute?: string): any {
+      const element = this.get(0);
+      if (element) {
+        return extractAttribute(element, attribute, $);
+      }
+      return undefined;
+    };
   }
 
-  // Extract content from first element
-  proto.extract = function(attribute?: string): any {
-    const element = this.get(0);
-    if (element) {
-      return extractAttribute(element, attribute, $);
-    }
-    return undefined;
-  };
+  if (!proto.extractAll) {
+    // Extract content from all elements
+    proto.extractAll = function(attribute?: string): any[] {
+      return this.map((_, element) => {
+        return extractAttribute(element, attribute, $);
+      }).get();
+    };
+  }
 
-  // Extract content from all elements
-  proto.extractAll = function(attribute?: string): any[] {
-    return this.map((_, element) => {
-      return extractAttribute(element, attribute, $);
-    }).get();
-  };
+  if (!proto.string) {
+    // Get direct text content
+    proto.string = function(): string {
+      return this.contents()
+        .filter((_, el) => el.type === 'text')
+        .text();
+    };
+  }
 
-  // Get direct text content
-  proto.string = function(): string {
-    return this.contents()
-      .filter((_, el) => el.type === 'text')
-      .text();
-  };
-
-  // Get next text node value
-  proto.nextNode = function(): string | undefined {
-    const element = this.get(0);
-    if (element) {
-      const nextSibling = element.nextSibling;
-      return nextSibling && nextSibling.type === 'text' 
-        ? (nextSibling as any).data 
-        : undefined;
-    }
-    return undefined;
-  };
+  if (!proto.nextNode) {
+    // Get next text node value
+    proto.nextNode = function(): string | undefined {
+      const element = this.get(0);
+      if (element) {
+        const nextSibling = element.nextSibling;
+        return nextSibling && nextSibling.type === 'text'
+          ? (nextSibling as any).data
+          : undefined;
+      }
+      return undefined;
+    };
+  }
 }
 
 /**
@@ -115,7 +123,8 @@ export function createExtendedCheerio(cheerio: any): CheerioAPI {
  * Type guard to check if Cheerio has extensions
  */
 export function hasExtensions($: any): $ is CheerioAPI & CheerioExtensions {
-  return typeof $.prototype?.extract === 'function';
+  const CheerioClass = $.constructor;
+  return typeof CheerioClass.prototype?.extract === 'function';
 }
 
 /**

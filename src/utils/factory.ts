@@ -173,7 +173,7 @@ export async function quickCrawl(
   });
 
   try {
-    const result = await crawler.crawl(url, { parse: parseRule });
+    const result = await crawler.crawl(url, parseRule ? { parse: parseRule } : {});
     await crawler.destroy();
     return result;
   } catch (error) {
@@ -196,7 +196,7 @@ export async function batchCrawl(
   });
 
   try {
-    const results = await crawler.crawlMany(urls, { parse: parseRule });
+    const results = await crawler.crawlMany(urls, parseRule ? { parse: parseRule } : {});
     await crawler.destroy();
     return results;
   } catch (error) {

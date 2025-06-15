@@ -2,12 +2,51 @@
  * Core Parser - Main parsing engine for extracting data from HTML
  */
 
-import { CheerioAPI } from 'cheerio';
+import { CheerioAPI, Cheerio, Element } from 'cheerio';
 
 import { ParseRule, ParseContext, FilterFunction, QueryInfo } from '@/types';
 import { parseQuery } from './query-parser';
 import { Filters } from './filters';
 import { ensureExtensions } from './cheerio-extensions';
+
+/**
+ * Extract attribute or content from element
+ */
+function extractAttribute(element: Element, attribute: string | undefined, $: CheerioAPI): any {
+  const attr = attribute || 'text';
+  const $el = $(element);
+
+  switch (attr) {
+    case 'html':
+      return $el.html();
+    case 'outerHtml':
+      return $.html(element);
+    case 'text':
+      return $el.text();
+    case 'string':
+      return $el.contents()
+        .filter((_, el) => el.type === 'text')
+        .text();
+    case 'nextNode':
+      const nextSibling = element.nextSibling;
+      return nextSibling && nextSibling.type === 'text'
+        ? (nextSibling as any).data
+        : undefined;
+    default:
+      return $el.attr(attr);
+  }
+}
+
+/**
+ * Extract content from all elements in a Cheerio collection
+ */
+function extractAllFromElements(elements: Cheerio<Element>, attribute: string | undefined, $: CheerioAPI): any[] {
+  const results: any[] = [];
+  elements.each((_, element) => {
+    results.push(extractAttribute(element, attribute, $));
+  });
+  return results;
+}
 
 /**
  * Parse a single query against a Cheerio context
@@ -27,22 +66,29 @@ function parseOne(
 
   // Extract values using selector
   if (queryInfo.selector) {
-    values = $(queryInfo.selector).extractAll(queryInfo.attribute);
+    const elements = $(queryInfo.selector);
+    values = extractAllFromElements(elements, queryInfo.attribute, $);
   } else {
-    values = $().addBack().extractAll(queryInfo.attribute);
+    const elements = $().addBack();
+    values = extractAllFromElements(elements, queryInfo.attribute, $);
   }
 
   // Apply filters
   if (queryInfo.getAll) {
-    // Apply filters to each value in array
+    // Apply filters to the entire array
+    let result: any = values;
     for (const filterInfo of queryInfo.filters) {
       const filterFn = filters[filterInfo.name];
       if (!filterFn) {
         throw new Error(`Filter '${filterInfo.name}' not found`);
       }
-      values = values.map(val => filterFn(val, ...filterInfo.args));
+      try {
+        result = filterFn(result, ...filterInfo.args);
+      } catch (error) {
+        throw new Error(`Parse error in query: ${query} - ${error}`);
+      }
     }
-    return values;
+    return result;
   } else {
     // Apply filters to single value
     let value = values[0];

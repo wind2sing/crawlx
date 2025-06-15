@@ -5,6 +5,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TaskScheduler } from './scheduler';
 import { PriorityQueue } from './priority-queue';
+import { ResourceManager } from './resource-manager';
 
 describe('TaskScheduler', () => {
   let scheduler: TaskScheduler;
@@ -212,20 +213,25 @@ describe('TaskScheduler', () => {
 
     it('should emit queue-empty event', async () => {
       const events: string[] = [];
-      
+
       scheduler.on('queue-empty', () => {
         events.push('queue-empty');
       });
 
       scheduler.setExecutor(async () => ({ success: true }));
-      
+
+      // Start processing
+      scheduler.start();
+
       const task = { url: 'https://example.com' };
       scheduler.enqueue(task);
-      
-      // Wait for task to be processed
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
+
+      // Wait for task to be processed and queue to become empty
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       expect(events).toContain('queue-empty');
+
+      scheduler.stop();
     });
   });
 });
@@ -319,6 +325,282 @@ describe('PriorityQueue', () => {
       
       expect(queue.size()).toBe(0);
       expect(queue.isEmpty()).toBe(true);
+    });
+  });
+});
+
+describe('ResourceManager', () => {
+  let resourceManager: ResourceManager;
+
+  beforeEach(() => {
+    resourceManager = new ResourceManager({
+      maxMemoryUsage: 100 * 1024 * 1024, // 100MB for testing
+      maxCpuUsage: 50,
+      maxActiveConnections: 10,
+      maxQueueSize: 20,
+      checkInterval: 100, // Fast interval for testing
+    });
+  });
+
+  afterEach(() => {
+    resourceManager.destroy();
+  });
+
+  describe('Initialization', () => {
+    it('should initialize with default limits', () => {
+      const defaultManager = new ResourceManager();
+      const limits = defaultManager.getLimits();
+
+      expect(limits.maxMemoryUsage).toBe(1024 * 1024 * 1024); // 1GB
+      expect(limits.maxCpuUsage).toBe(80);
+      expect(limits.maxActiveConnections).toBe(100);
+      expect(limits.maxQueueSize).toBe(1000);
+      expect(limits.checkInterval).toBe(5000);
+
+      defaultManager.destroy();
+    });
+
+    it('should initialize with custom limits', () => {
+      const limits = resourceManager.getLimits();
+
+      expect(limits.maxMemoryUsage).toBe(100 * 1024 * 1024);
+      expect(limits.maxCpuUsage).toBe(50);
+      expect(limits.maxActiveConnections).toBe(10);
+      expect(limits.maxQueueSize).toBe(20);
+      expect(limits.checkInterval).toBe(100);
+    });
+
+    it('should provide initial resource usage', () => {
+      const usage = resourceManager.getCurrentUsage();
+
+      expect(usage).toHaveProperty('memory');
+      expect(usage).toHaveProperty('cpu');
+      expect(usage).toHaveProperty('activeConnections');
+      expect(usage).toHaveProperty('queueSize');
+
+      expect(usage.memory.used).toBeGreaterThan(0);
+      expect(usage.memory.total).toBeGreaterThan(0);
+      expect(usage.memory.percentage).toBeGreaterThan(0);
+      expect(usage.activeConnections).toBe(0);
+      expect(usage.queueSize).toBe(0);
+    });
+  });
+
+  describe('Resource monitoring', () => {
+    it('should emit resource-update events', async () => {
+      const updates: any[] = [];
+
+      resourceManager.on('resource-update', (usage) => {
+        updates.push(usage);
+      });
+
+      // Wait for at least one update
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      expect(updates.length).toBeGreaterThan(0);
+      expect(updates[0]).toHaveProperty('memory');
+      expect(updates[0]).toHaveProperty('cpu');
+    });
+
+    it('should stop monitoring when destroyed', async () => {
+      const updates: any[] = [];
+
+      resourceManager.on('resource-update', (usage) => {
+        updates.push(usage);
+      });
+
+      // Wait for initial updates
+      await new Promise(resolve => setTimeout(resolve, 150));
+      const initialCount = updates.length;
+
+      resourceManager.stopMonitoring();
+
+      // Wait more time
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      // Should not have received more updates
+      expect(updates.length).toBe(initialCount);
+    });
+  });
+
+  describe('Resource limits checking', () => {
+    it('should check if resources are within limits', () => {
+      expect(resourceManager.isWithinLimits()).toBe(true);
+
+      // Simulate high resource usage
+      resourceManager.updateActiveConnections(15); // Above limit of 10
+      expect(resourceManager.isWithinLimits()).toBe(false);
+    });
+
+    it('should check specific resource availability', () => {
+      expect(resourceManager.isResourceAvailable('connections')).toBe(true);
+      expect(resourceManager.isResourceAvailable('queue')).toBe(true);
+      expect(resourceManager.isResourceAvailable('memory')).toBe(true);
+      expect(resourceManager.isResourceAvailable('cpu')).toBe(true);
+
+      resourceManager.updateActiveConnections(10); // At limit
+      expect(resourceManager.isResourceAvailable('connections')).toBe(false);
+
+      resourceManager.updateQueueSize(20); // At limit
+      expect(resourceManager.isResourceAvailable('queue')).toBe(false);
+    });
+
+    it('should emit limit warning events', async () => {
+      const warnings: any[] = [];
+
+      resourceManager.on('limit-warning', (type, current, limit) => {
+        warnings.push({ type, current, limit });
+      });
+
+      // Set connections to warning threshold (80% of 10 = 8)
+      resourceManager.updateActiveConnections(9);
+
+      // Wait for monitoring cycle
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      expect(warnings.length).toBeGreaterThan(0);
+      expect(warnings[0].type).toBe('connections');
+    });
+
+    it('should emit limit exceeded events', async () => {
+      const exceeded: any[] = [];
+
+      resourceManager.on('limit-exceeded', (type, current, limit) => {
+        exceeded.push({ type, current, limit });
+      });
+
+      // Set connections above limit
+      resourceManager.updateActiveConnections(15);
+
+      // Wait for monitoring cycle
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      expect(exceeded.length).toBeGreaterThan(0);
+      expect(exceeded[0].type).toBe('connections');
+      expect(exceeded[0].current).toBe(15);
+      expect(exceeded[0].limit).toBe(10);
+    });
+  });
+
+  describe('Resource utilization', () => {
+    it('should calculate resource utilization percentages', () => {
+      resourceManager.updateActiveConnections(5); // 50% of 10
+      resourceManager.updateQueueSize(10); // 50% of 20
+
+      const utilization = resourceManager.getUtilization();
+
+      expect(utilization.connections).toBe(50);
+      expect(utilization.queue).toBe(50);
+      expect(utilization.memory).toBeGreaterThan(0);
+      expect(utilization.cpu).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should calculate available capacity', () => {
+      resourceManager.updateActiveConnections(3);
+      resourceManager.updateQueueSize(5);
+
+      const capacity = resourceManager.getAvailableCapacity();
+
+      expect(capacity.connections).toBe(7); // 10 - 3
+      expect(capacity.queue).toBe(15); // 20 - 5
+      expect(capacity.memory).toBeGreaterThan(0);
+      expect(capacity.cpu).toBeGreaterThan(0);
+    });
+
+    it('should determine memory pressure level', () => {
+      // Mock utilization to test different pressure levels
+      const originalGetUtilization = resourceManager.getUtilization;
+
+      resourceManager.getUtilization = vi.fn().mockReturnValue({ memory: 30 });
+      expect(resourceManager.getMemoryPressure()).toBe('low');
+
+      resourceManager.getUtilization = vi.fn().mockReturnValue({ memory: 60 });
+      expect(resourceManager.getMemoryPressure()).toBe('medium');
+
+      resourceManager.getUtilization = vi.fn().mockReturnValue({ memory: 80 });
+      expect(resourceManager.getMemoryPressure()).toBe('high');
+
+      resourceManager.getUtilization = vi.fn().mockReturnValue({ memory: 95 });
+      expect(resourceManager.getMemoryPressure()).toBe('critical');
+
+      // Restore original method
+      resourceManager.getUtilization = originalGetUtilization;
+    });
+  });
+
+  describe('Configuration management', () => {
+    it('should update resource limits', () => {
+      resourceManager.updateLimits({
+        maxActiveConnections: 20,
+        maxQueueSize: 50,
+      });
+
+      const limits = resourceManager.getLimits();
+      expect(limits.maxActiveConnections).toBe(20);
+      expect(limits.maxQueueSize).toBe(50);
+      // Other limits should remain unchanged
+      expect(limits.maxMemoryUsage).toBe(100 * 1024 * 1024);
+      expect(limits.maxCpuUsage).toBe(50);
+    });
+
+    it('should update external resource counters', () => {
+      resourceManager.updateActiveConnections(5);
+      resourceManager.updateQueueSize(10);
+
+      const usage = resourceManager.getCurrentUsage();
+      expect(usage.activeConnections).toBe(5);
+      expect(usage.queueSize).toBe(10);
+    });
+  });
+
+  describe('Memory management', () => {
+    it('should attempt garbage collection if available', () => {
+      // Mock global.gc
+      const originalGc = global.gc;
+      global.gc = vi.fn();
+
+      const result = resourceManager.forceGarbageCollection();
+      expect(result).toBe(true);
+      expect(global.gc).toHaveBeenCalled();
+
+      // Restore
+      global.gc = originalGc;
+    });
+
+    it('should handle missing garbage collection', () => {
+      const originalGc = global.gc;
+      delete (global as any).gc;
+
+      const result = resourceManager.forceGarbageCollection();
+      expect(result).toBe(false);
+
+      // Restore
+      global.gc = originalGc;
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('should handle resource manager destruction', () => {
+      const spy = vi.spyOn(resourceManager, 'stopMonitoring');
+      const removeListenersSpy = vi.spyOn(resourceManager, 'removeAllListeners');
+
+      resourceManager.destroy();
+
+      expect(spy).toHaveBeenCalled();
+      expect(removeListenersSpy).toHaveBeenCalled();
+    });
+
+    it('should handle invalid resource type checks', () => {
+      expect(resourceManager.isResourceAvailable('invalid' as any)).toBe(false);
+    });
+
+    it('should provide consistent resource snapshots', () => {
+      const usage1 = resourceManager.getCurrentUsage();
+      const usage2 = resourceManager.getCurrentUsage();
+
+      // Should be different objects (deep copy)
+      expect(usage1).not.toBe(usage2);
+      expect(usage1).toEqual(usage2);
     });
   });
 });
