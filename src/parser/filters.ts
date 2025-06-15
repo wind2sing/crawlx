@@ -289,6 +289,148 @@ export const builtinFilters: Record<string, FilterFunction> = {
     }
     return [];
   },
+
+  /**
+   * Greater than comparison
+   */
+  gt: (value: any, threshold: number): boolean => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return !isNaN(num) && num > threshold;
+  },
+
+  /**
+   * Greater than or equal comparison
+   */
+  gte: (value: any, threshold: number): boolean => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return !isNaN(num) && num >= threshold;
+  },
+
+  /**
+   * Less than comparison
+   */
+  lt: (value: any, threshold: number): boolean => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return !isNaN(num) && num < threshold;
+  },
+
+  /**
+   * Less than or equal comparison
+   */
+  lte: (value: any, threshold: number): boolean => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return !isNaN(num) && num <= threshold;
+  },
+
+  /**
+   * Equal comparison
+   */
+  eq: (value: any, target: any): boolean => {
+    // Try numeric comparison first
+    const numValue = typeof value === 'number' ? value : parseFloat(String(value));
+    const numTarget = typeof target === 'number' ? target : parseFloat(String(target));
+
+    if (!isNaN(numValue) && !isNaN(numTarget)) {
+      return numValue === numTarget;
+    }
+
+    // Fall back to string comparison
+    return String(value) === String(target);
+  },
+
+  /**
+   * Not equal comparison
+   */
+  ne: (value: any, target: any): boolean => {
+    // Try numeric comparison first
+    const numValue = typeof value === 'number' ? value : parseFloat(String(value));
+    const numTarget = typeof target === 'number' ? target : parseFloat(String(target));
+
+    if (!isNaN(numValue) && !isNaN(numTarget)) {
+      return numValue !== numTarget;
+    }
+
+    // Fall back to string comparison
+    return String(value) !== String(target);
+  },
+
+  /**
+   * Check if value is empty
+   */
+  empty: (value: any): boolean => {
+    if (value === null || value === undefined) return true;
+    if (typeof value === 'string') return value.trim() === '';
+    if (Array.isArray(value)) return value.length === 0;
+    if (typeof value === 'object') return Object.keys(value).length === 0;
+    return false;
+  },
+
+  /**
+   * Check if value is not empty
+   */
+  notEmpty: (value: any): boolean => {
+    if (value === null || value === undefined) return false;
+    if (typeof value === 'string') return value.trim() !== '';
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'object') return Object.keys(value).length > 0;
+    return true;
+  },
+
+  /**
+   * Check if value exists (not null/undefined)
+   */
+  exists: (value: any): boolean => {
+    return value !== null && value !== undefined;
+  },
+
+  /**
+   * Math operations - add
+   */
+  add: (value: any, addend: number): number => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return isNaN(num) ? 0 : num + addend;
+  },
+
+  /**
+   * Math operations - subtract
+   */
+  subtract: (value: any, subtrahend: number): number => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return isNaN(num) ? 0 : num - subtrahend;
+  },
+
+  /**
+   * Math operations - multiply
+   */
+  multiply: (value: any, multiplier: number): number => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return isNaN(num) ? 0 : num * multiplier;
+  },
+
+  /**
+   * Math operations - divide
+   */
+  divide: (value: any, divisor: number): number => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return isNaN(num) || divisor === 0 ? 0 : num / divisor;
+  },
+
+  /**
+   * Round number
+   */
+  round: (value: any, decimals: number = 0): number => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    if (isNaN(num)) return 0;
+    return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+  },
+
+  /**
+   * Absolute value
+   */
+  abs: (value: any): number => {
+    const num = typeof value === 'number' ? value : parseFloat(String(value));
+    return isNaN(num) ? 0 : Math.abs(num);
+  },
 };
 
 /**

@@ -75,7 +75,7 @@ async function finalTest() {
         title: 'h1',
         content: {
           paragraphCount: '[p] | count',
-          hasContent: '[p] | count | gt(0)'
+          hasContent: '[p] | count | gt:0'
         }
       }
     });
