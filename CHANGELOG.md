@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.1] - 2025-06-15
+
+### Added
+- **Comparison filters**: Added missing comparison filters (`gt`, `gte`, `lt`, `lte`, `eq`, `ne`)
+- **Utility filters**: Added utility filters (`empty`, `notEmpty`, `exists`)
+- **Math operation filters**: Added math filters (`add`, `subtract`, `multiply`, `divide`, `round`, `abs`)
+- **Comprehensive test suite**: Added `examples/test-new-filters.js` for testing new filters
+- **Problem fixes documentation**: Added `PROBLEM_FIXES.md` with detailed fix report
+
+### Fixed
+- **Filter syntax**: Fixed filter syntax in examples from `gt(0)` to `gt:0`
+- **Missing filters**: Resolved "Filter 'gt(0)' not found" errors in complex parsing rules
+- **Examples compatibility**: All examples now pass 100% tests
+
+### Improved
+- **Filter system**: Enhanced filter system with 15 new utility filters
+- **Test coverage**: Improved test coverage with comprehensive filter testing
+- **Documentation**: Better documentation of filter usage and syntax
+
 ## [2.0.0] - 2024-01-XX
 
 ### Added
